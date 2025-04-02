@@ -1,4 +1,4 @@
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  1
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -34,121 +34,112 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0000   2801           00019                      GOTO CONFIGURAR
                       00020 
 0001                  00021 CONFIGURAR:
-0001   1283           00022                      BCF   STATUS, RP0 ;
-0002   1303           00023                      BCF   STATUS, RP1 ; Bank0
-0003   0185           00024                      CLRF  PORTA       ; Initialize PORTA by
-                      00025                                        ; clearing output
-                      00026                                        ; data latches
-0004   1683           00027                      BSF   STATUS, RP0 ; Select Bank 1
-0005   3006           00028                      MOVLW 0x06      ; Configure all pins
+0001   1683           00022                      BSF   STATUS, RP0 ; Select Bank 1
+0002   3006           00023                      MOVLW 0x06      ; Configure all pins
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0006   009F           00029                      MOVWF ADCON1    ; as digital inputs
-0007   30C0           00030                      MOVLW 0xC0      ; Value used to
-                      00031                                      ; initialize data
-                      00032                                      ; direction
+0003   009F           00024                      MOVWF ADCON1    ; as digital inputs   
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0008   0085           00033                      MOVWF TRISA     ; Set RA<3:0> as OUTPUTS
-                      00034                                      ; RA<5:4> as outputs
-                      00035                                      ; TRISA<7:6>are always
-                      00036                                      ; read as '0'.
+0004   1005           00025                      BCF   TRISA,RA0
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0009   0186           00037                      CLRF  TRISB
-000A   1283           00038                      BCF   STATUS,RP0
-000B   0186           00039                      CLRF  PORTB
-000C   01A0           00040                      CLRF  UNIDAD
-000D   01A1           00041                      CLRF  DECENA
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  2
+0005   1085           00026                                          BCF   TRISA,RA1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0006   0186           00027                      CLRF  TRISB
+0007   1283           00028                      BCF   STATUS,RP0
+0008   0186           00029                      CLRF  PORTB
+0009   01A0           00030                      CLRF  UNIDAD
+000A   01A1           00031                      CLRF  DECENA
+                      00032 ;-----------------------------------------
+000B                  00033 MAIN:
+000B   200E           00034                      CALL  VISUALIZAR     ;LLAMA A LA SUBRUTINA VISUALIZAR
+000C   2026           00035                      CALL  INTERNO        ;LLAMA A LA SUBRUTINA INTERNO
+000D   280B           00036                      GOTO  MAIN           ;CIERRA EL BUCLE PRINCIPAL
+                      00037 ;-----------------------------------------
+000E                  00038 VISUALIZAR:                     
+                      00039 ;UNIDADES 
+000E   1405           00040                      BSF   DISPLAY1       ;EL DISPLAY1 SE ENCIENDE 
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00042 ;-----------------------------------------
-000E                  00043 MAIN:
-000E   2011           00044                      CALL  VISUALIZAR     ;LLAMA A LA SUBRUTINA VISUALIZAR
-000F   2029           00045                      CALL  INTERNO        ;LLAMA A LA SUBRUTINA INTERNO
-0010   280E           00046                      GOTO  MAIN           ;CIERRA EL BUCLE PRINCIPAL
-                      00047 ;-----------------------------------------
-0011                  00048 VISUALIZAR:                     
-                      00049 ;UNIDADES 
-0011   1405           00050                      BSF   DISPLAY1       ;EL DISPLAY1 SE ENCIENDE 
-0012   1085           00051                      BCF   DISPLAY2       ;EL DISPLAY2 ESTÁ APAGADO
-0013   0820           00052                      MOVF  UNIDAD,W       ;MOVEMOS EL CONTENIDO DE LA DEL REGISTRO UNIDAD
-0014   201E           00053                      CALL  TABLA          ;HACE UN LLAMADO A LA SUBRUTINA TABLA
-0015   0086           00054                      MOVWF PORTB          ;MOVER EL REGITRO DE TRABAJO AL REGISTRO PORTB
-0016   203D           00055                      CALL  RETARDO        ;RETADOR FPS PARA LA VISUALIZACION DE DISPLAY
-                      00056 ;DECENAS
-0017   1005           00057                      BCF   DISPLAY1       ;EL DISPLAY1 SE APAGA
-0018   1485           00058                      BSF   DISPLAY2       ;EL DISPLAY2 SE ENCIENE
-0019   0821           00059                      MOVF  DECENA,W       ;MOVER EL REGISTRO DECENA AL REGISTRO 'W'
-001A   201E           00060                      CALL  TABLA          ;LLAMADA A LA SUBRUTINA TABLA
-001B   0086           00061                      MOVWF PORTB          ;MOVER EL REGISTRO DE TRABAJO AL REGISTRO PORTB
-001C   203D           00062                      CALL  RETARDO        ;LLAMADA A SUBRUTINA
-001D   0008           00063                      RETURN               ;RETORNO DE LA SUBRUTINA
-001E                  00064 TABLA:
-001E   0782           00065                      ADDWF    PCL,F       ;REALIZA LA SIGUIENTE OPEACIÓN PCL=PCL+W
-001F   343F           00066                      RETLW    0X3F        ;RETORNA EN 'W' CON UN VALOR 0
-0020   3406           00067                      RETLW    0X06        ;RETORNA EN 'W' CON UN VALOR 1
-0021   345B           00068                      RETLW    0X5B        ;RETORNA EN 'W' CON UN VALOR 2
-0022   344F           00069                      RETLW    0X4F        ;RETORNA EN 'W' CON UN VALOR 3
-0023   3466           00070                      RETLW    0X66        ;RETORNA EN 'W' CON UN VALOR 4
-0024   346D           00071                      RETLW    0X6D        ;RETORNA EN 'W' CON UN VALOR 5
-0025   347D           00072                      RETLW    0X7D        ;RETORNA EN 'W' CON UN VALOR 6
-0026   3407           00073                      RETLW    0X07        ;RETORNA EN 'W' CON UN VALOR 7
-0027   347F           00074                      RETLW    0X7F        ;RETORNA EN 'W' CON UN VALOR 8
-0028   346F           00075                      RETLW    0X6F        ;RETORNA EN 'W' CON UN VALOR 9
-0029                  00076 INTERNO:
-                      00077 ;PARA PODER MANTENER LA VISUALIZACION EN EL DISPLAY----------------------
-0029   0AA4           00078                      INCF     AUX,F       ;INCREMENTAMOS LA VARIABLE AUX
-002A   30FF           00079                      MOVLW    .255        ;MOVER EL VALOR 255 AL REGISTRO 'W'
-002B   0224           00080                      SUBWF    AUX,W       ;SUBSTRAER EL REGISTRO 'W' DEL REGISTRO AUX W=AUX-W
-002C   1D03           00081                      BTFSS    STATUS,Z    ;SALTA UNA INSTRUCCIÓN SI LA BANDERA 'Z' ESTA EN 1 LOGICO
-002D   0008           00082                      RETURN               ;EJECUTA LA INSTRUCCIÓN RETURN CUANDO 'Z' NO ESTA EN 1 LOGICO
-                      00083 ;------------------------------------------------------------------------
-                      00084               
-                      00085 ;PARA LAS UNIDADES
-002E   01A4           00086                      CLRF    AUX          ;LIMPIAR LA VARIABLE AUX
-002F   0AA0           00087                      INCF    UNIDAD,F     ;INCREMENTAR EL REGISTRO UNIDAD (UNIDAD=UNIDAD+1)
-0030   300A           00088                      MOVLW   .10          ;MOVER EL LITERAL 10 AL REGISTRO 'W'
-0031   0220           00089                      SUBWF   UNIDAD,W     ;SUBSTRAER EL REGISTRO 'W' DEL REGISTRO UNIDAD
-0032   1D03           00090                      BTFSS   STATUS,Z     ;SALTA SI LA BANDERA 'Z' ESTÁ EN 1 LÓGICO
-0033   0008           00091                      RETURN               ;RETORNA SI LA BANDERA 'Z' NO ESTÁ A 1 LÓGICO
-                      00092                      
-                      00093 ;PARA LAS DECENAS
-0034   01A0           00094                      CLRF    UNIDAD       ;LIMPIAMOS EL REGISTRO UNIDAD, PARA PODDER REALIZAR NUEVAMENTE
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  3
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
+000F   1085           00041                      BCF   DISPLAY2       ;EL DISPLAY2 ESTÁ APAGADO
+0010   0820           00042                      MOVF  UNIDAD,W       ;MOVEMOS EL CONTENIDO DE LA DEL REGISTRO UNIDAD
+0011   201B           00043                      CALL  TABLA          ;HACE UN LLAMADO A LA SUBRUTINA TABLA
+0012   0086           00044                      MOVWF PORTB          ;MOVER EL REGITRO DE TRABAJO AL REGISTRO PORTB
+0013   203A           00045                      CALL  RETARDO        ;RETADOR FPS PARA LA VISUALIZACION DE DISPLAY
+                      00046 ;DECENAS
+0014   1005           00047                      BCF   DISPLAY1       ;EL DISPLAY1 SE APAGA
+0015   1485           00048                      BSF   DISPLAY2       ;EL DISPLAY2 SE ENCIENE
+0016   0821           00049                      MOVF  DECENA,W       ;MOVER EL REGISTRO DECENA AL REGISTRO 'W'
+0017   201B           00050                      CALL  TABLA          ;LLAMADA A LA SUBRUTINA TABLA
+0018   0086           00051                      MOVWF PORTB          ;MOVER EL REGISTRO DE TRABAJO AL REGISTRO PORTB
+0019   203A           00052                      CALL  RETARDO        ;LLAMADA A SUBRUTINA
+001A   0008           00053                      RETURN               ;RETORNO DE LA SUBRUTINA
+001B                  00054 TABLA:
+001B   0782           00055                      ADDWF    PCL,F       ;REALIZA LA SIGUIENTE OPEACIÓN PCL=PCL+W
+001C   343F           00056                      RETLW    0X3F        ;RETORNA EN 'W' CON UN VALOR 0
+001D   3406           00057                      RETLW    0X06        ;RETORNA EN 'W' CON UN VALOR 1
+001E   345B           00058                      RETLW    0X5B        ;RETORNA EN 'W' CON UN VALOR 2
+001F   344F           00059                      RETLW    0X4F        ;RETORNA EN 'W' CON UN VALOR 3
+0020   3466           00060                      RETLW    0X66        ;RETORNA EN 'W' CON UN VALOR 4
+0021   346D           00061                      RETLW    0X6D        ;RETORNA EN 'W' CON UN VALOR 5
+0022   347D           00062                      RETLW    0X7D        ;RETORNA EN 'W' CON UN VALOR 6
+0023   3407           00063                      RETLW    0X07        ;RETORNA EN 'W' CON UN VALOR 7
+0024   347F           00064                      RETLW    0X7F        ;RETORNA EN 'W' CON UN VALOR 8
+0025   346F           00065                      RETLW    0X6F        ;RETORNA EN 'W' CON UN VALOR 9
+0026                  00066 INTERNO:
+                      00067 ;PARA PODER MANTENER LA VISUALIZACION EN EL DISPLAY----------------------
+0026   0AA4           00068                      INCF     AUX,F       ;INCREMENTAMOS LA VARIABLE AUX
+0027   3032           00069                      MOVLW    .50         ;MOVER EL VALOR 50 AL REGISTRO 'W'
+0028   0224           00070                      SUBWF    AUX,W       ;SUBSTRAER EL REGISTRO 'W' DEL REGISTRO AUX W=AUX-W
+0029   1D03           00071                      BTFSS    STATUS,Z    ;SALTA UNA INSTRUCCIÓN SI LA BANDERA 'Z' ESTA EN 1 LOGICO
+002A   0008           00072                      RETURN               ;EJECUTA LA INSTRUCCIÓN RETURN CUANDO 'Z' NO ESTA EN 1 LOGICO
+                      00073 ;------------------------------------------------------------------------
+                      00074               
+                      00075 ;PARA LAS UNIDADES
+002B   01A4           00076                      CLRF    AUX          ;LIMPIAR LA VARIABLE AUX
+002C   0AA0           00077                      INCF    UNIDAD,F     ;INCREMENTAR EL REGISTRO UNIDAD (UNIDAD=UNIDAD+1)
+002D   300A           00078                      MOVLW   .10          ;MOVER EL LITERAL 10 AL REGISTRO 'W'
+002E   0220           00079                      SUBWF   UNIDAD,W     ;SUBSTRAER EL REGISTRO 'W' DEL REGISTRO UNIDAD
+002F   1D03           00080                      BTFSS   STATUS,Z     ;SALTA SI LA BANDERA 'Z' ESTÁ EN 1 LÓGICO
+0030   0008           00081                      RETURN               ;RETORNA SI LA BANDERA 'Z' NO ESTÁ A 1 LÓGICO
+                      00082                      
+                      00083 ;PARA LAS DECENAS
+0031   01A0           00084                      CLRF    UNIDAD       ;LIMPIAMOS EL REGISTRO UNIDAD, PARA PODDER REALIZAR NUEVAMENTE
                              EL CONTEO DE UNIDADES
-0035   0AA1           00095                      INCF    DECENA,F     ;SE INCREMENTA LAS DECENAS
-0036   300A           00096                      MOVLW   .10          ;LIMITE DE LAS DECENAS REALIZA EL CONTEO HASTA 9, MAS EL 0 SON
+0032   0AA1           00085                      INCF    DECENA,F     ;SE INCREMENTA LAS DECENAS
+0033   300A           00086                      MOVLW   .10          ;LIMITE DE LAS DECENAS REALIZA EL CONTEO HASTA 9, MAS EL 0 SON
                              10
-0037   0221           00097                      SUBWF   DECENA,W     ;RESTA EL LIMITE CON EL REGISTRO DECENA
-0038   1D03           00098                      BTFSS   STATUS,Z     ;SALTA SI LA BANDERA 'Z' ESTÁ EN 1 LÓGICO
-0039   0008           00099                      RETURN               ;RETORNA SI LA BANDERA 'Z' NO ESTÁ A 1 LÓGICO
-                      00100 
-003A   01A0           00101                      CLRF    UNIDAD       ;REINICIAMOS EL CONTADOR 
-003B   01A1           00102                      CLRF    DECENA
-003C   0008           00103                      RETURN
-                      00104 ;----------------RETARDO PARA 10MS-------------------
-003D                  00105 RETARDO:      
-003D   3021           00106                      MOVLW   .33          
-003E   00A3           00107                      MOVWF   CONT2
-003F                  00108 REPETICION2:  
-003F   3064           00109                      MOVLW   .100
-0040   00A2           00110                      MOVWF   CONT1
-0041                  00111 REPETICION1:  
-0041   0BA2           00112                      DECFSZ  CONT1,F
-0042   2841           00113                      GOTO    REPETICION1
-0043   0BA3           00114                      DECFSZ  CONT2,F
-0044   283F           00115                      GOTO    REPETICION2      
-0045   0008           00116                      RETURN
-                      00117 
-                      00118                      END
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  4
+0034   0221           00087                      SUBWF   DECENA,W     ;RESTA EL LIMITE CON EL REGISTRO DECENA
+0035   1D03           00088                      BTFSS   STATUS,Z     ;SALTA SI LA BANDERA 'Z' ESTÁ EN 1 LÓGICO
+0036   0008           00089                      RETURN               ;RETORNA SI LA BANDERA 'Z' NO ESTÁ A 1 LÓGICO
+                      00090 
+0037   01A0           00091                      CLRF    UNIDAD       ;REINICIAMOS EL CONTADOR 
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0038   01A1           00092                      CLRF    DECENA
+0039   0008           00093                      RETURN
+                      00094 ;----------------RETARDO PARA 5MS-------------------
+003A                  00095 RETARDO:      
+003A   3010           00096                      MOVLW   .16          
+003B   00A3           00097                      MOVWF   CONT2
+003C                  00098 REPETICION2:  
+003C   3064           00099                      MOVLW   .100
+003D   00A2           00100                      MOVWF   CONT1
+003E                  00101 REPETICION1:  
+003E   0BA2           00102                      DECFSZ  CONT1,F
+003F   283E           00103                      GOTO    REPETICION1
+0040   0BA3           00104                      DECFSZ  CONT2,F
+0041   283C           00105                      GOTO    REPETICION2      
+0042   0008           00106                      RETURN
+                      00107 
+                      00108                      END
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  4
 
 
 SYMBOL TABLE
@@ -207,7 +198,7 @@ CHS0                              00000003
 CHS1                              00000004
 CHS2                              00000005
 CIS                               00000003
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  5
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  5
 
 
 SYMBOL TABLE
@@ -266,7 +257,7 @@ I2C_STOP                          00000004
 IBF                               00000007
 IBOV                              00000005
 INDF                              00000000
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  6
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  6
 
 
 SYMBOL TABLE
@@ -275,10 +266,10 @@ SYMBOL TABLE
 INTCON                            0000000B
 INTE                              00000004
 INTEDG                            00000006
-INTERNO                           00000029
+INTERNO                           00000026
 INTF                              00000001
 IRP                               00000007
-MAIN                              0000000E
+MAIN                              0000000B
 NOT_A                             00000005
 NOT_ADDRESS                       00000005
 NOT_BO                            00000000
@@ -325,7 +316,7 @@ PSPIF                             00000007
 PSPMODE                           00000004
 R                                 00000002
 RA0                               00000000
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  7
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  7
 
 
 SYMBOL TABLE
@@ -375,16 +366,16 @@ RE0                               00000000
 RE1                               00000001
 RE2                               00000002
 READ_WRITE                        00000002
-REPETICION1                       00000041
-REPETICION2                       0000003F
-RETARDO                           0000003D
+REPETICION1                       0000003E
+REPETICION2                       0000003C
+RETARDO                           0000003A
 RP0                               00000005
 RP1                               00000006
 RSEN                              00000001
 RX9                               00000006
 RX9D                              00000000
 R_NOT_W                           00000002
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  8
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  8
 
 
 SYMBOL TABLE
@@ -425,7 +416,7 @@ T1SYNC                            00000002
 T2CKPS0                           00000000
 T2CKPS1                           00000001
 T2CON                             00000012
-TABLA                             0000001E
+TABLA                             0000001B
 TMR0                              00000001
 TMR0IE                            00000005
 TMR0IF                            00000002
@@ -443,7 +434,7 @@ TMR2ON                            00000002
 TOUTPS0                           00000003
 TOUTPS1                           00000004
 TOUTPS2                           00000005
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE  9
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE  9
 
 
 SYMBOL TABLE
@@ -500,9 +491,9 @@ TXREG                             00000019
 TXSTA                             00000098
 UA                                00000001
 UNIDAD                            00000020
-VISUALIZAR                        00000011
+VISUALIZAR                        0000000E
 W                                 00000000
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE 10
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE 10
 
 
 SYMBOL TABLE
@@ -552,24 +543,24 @@ _WRT_OFF                          00003FFF
 _XT_OSC                           00003FFD
 __16F877A                         00000001
 __DEBUG                           1
-MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   9-23-2024  23:21:58         PAGE 11
+MPASM  5.51  MULTIPLEXACION DE DOS DISPLAY.AS   4-1-2025  23:05:11         PAGE 11
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
 
 0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0040 : XXXXXX---------- ---------------- ---------------- ----------------
+0040 : XXX------------- ---------------- ---------------- ----------------
 2000 : -------X-------- ---------------- ---------------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Words Used:    70
-Program Memory Words Free:  8122
+Program Memory Words Used:    67
+Program Memory Words Free:  8125
 
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed
-Messages :     3 reported,     0 suppressed
+Messages :     4 reported,     0 suppressed
 
 

@@ -19,21 +19,11 @@
                      GOTO CONFIGURAR
 
 CONFIGURAR:
-                     BCF   STATUS, RP0 ;
-                     BCF   STATUS, RP1 ; Bank0
-                     CLRF  PORTA       ; Initialize PORTA by
-                                       ; clearing output
-                                       ; data latches
                      BSF   STATUS, RP0 ; Select Bank 1
                      MOVLW 0x06      ; Configure all pins
-                     MOVWF ADCON1    ; as digital inputs
-                     MOVLW 0xC0      ; Value used to
-                                     ; initialize data
-                                     ; direction
-                     MOVWF TRISA     ; Set RA<3:0> as OUTPUTS
-                                     ; RA<5:4> as outputs
-                                     ; TRISA<7:6>are always
-                                     ; read as '0'.
+                     MOVWF ADCON1    ; as digital inputs   
+                     BCF   TRISA,RA0
+					 BCF   TRISA,RA1
                      CLRF  TRISB
                      BCF   STATUS,RP0
                      CLRF  PORTB
@@ -76,7 +66,7 @@ TABLA:
 INTERNO:
 ;PARA PODER MANTENER LA VISUALIZACION EN EL DISPLAY----------------------
                      INCF     AUX,F       ;INCREMENTAMOS LA VARIABLE AUX
-                     MOVLW    .255        ;MOVER EL VALOR 255 AL REGISTRO 'W'
+                     MOVLW    .50         ;MOVER EL VALOR 50 AL REGISTRO 'W'
                      SUBWF    AUX,W       ;SUBSTRAER EL REGISTRO 'W' DEL REGISTRO AUX W=AUX-W
                      BTFSS    STATUS,Z    ;SALTA UNA INSTRUCCIÓN SI LA BANDERA 'Z' ESTA EN 1 LOGICO
                      RETURN               ;EJECUTA LA INSTRUCCIÓN RETURN CUANDO 'Z' NO ESTA EN 1 LOGICO
@@ -101,9 +91,9 @@ INTERNO:
                      CLRF    UNIDAD       ;REINICIAMOS EL CONTADOR 
                      CLRF    DECENA
                      RETURN
-;----------------RETARDO PARA 10MS-------------------
+;----------------RETARDO PARA 5MS-------------------
 RETARDO:      
-                     MOVLW   .33          
+                     MOVLW   .16          
                      MOVWF   CONT2
 REPETICION2:  
                      MOVLW   .100
